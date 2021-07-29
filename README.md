@@ -14,7 +14,7 @@ If you don't have a GPU for PyTorch, this command might help
     
 `pip install torch==1.7.1+cpu torchvision==0.8.2+cpu torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html`
 
-
+Edit from Quill: still `pip install memery` to get the dependencies, but then also clone the repository to get the updated files
 ## How to use
 
 ### Use GUI
@@ -24,6 +24,8 @@ The browser GUI is a Streamlit app. You can run it from the command line with
 `memery serve`
 
 or set up a desktop shortcut to use it from your menu.
+
+Edit from Quill: this runs the version in the pip package, to run the modified version use `streamlit run ./streamlit_app.py` from within the memery/memery folder
 
 If you're in a Jupyter environment, you can summon the GUI directly into an output cell like this:
 
