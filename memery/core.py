@@ -7,11 +7,11 @@ import torch
 import gc
 
 from pathlib import Path
-from .loader import get_image_files, archive_loader, db_loader, treemap_loader, check_for_new_files
-from .crafter import crafter, preproc
-from .encoder import image_encoder, text_encoder, image_query_encoder
-from .indexer import join_all, build_treemap, save_archives, save_encodings
-from .ranker import ranker, nns_to_files
+from loader import get_image_files, archive_loader, db_loader, treemap_loader, check_for_new_files
+from crafter import crafter, preproc
+from encoder import image_encoder, text_encoder, image_query_encoder
+from indexer import join_all, build_treemap, save_archives, save_encodings
+from ranker import ranker, nns_to_files
 
 
 def index_flow(path, filepaths=None):

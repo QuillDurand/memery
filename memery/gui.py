@@ -2,7 +2,7 @@ __all__ = ['get_image', 'get_grid', 'update_tabs', 'AppPage']
 
 import ipywidgets as widgets
 
-from .core import query_flow
+from core import query_flow
 from pathlib import Path
 from IPython.display import clear_output
 

@@ -3,7 +3,7 @@ __all__ = ['st_redirect', 'st_stdout', 'st_stderr', 'send_image_query', 'send_te
 
 
 import streamlit as st
-from memery import core
+import core
 
 from pathlib import Path
 from PIL import Image

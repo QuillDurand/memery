@@ -2,7 +2,7 @@ __all__ = ['st_redirect', 'st_stdout', 'st_stderr', 'send_image_query', 'send_te
            'image_query', 'im_display_zone', 'logbox', 'sizes']
 
 import streamlit as st
-from memery import core
+import core
 
 from PIL import Image
 
