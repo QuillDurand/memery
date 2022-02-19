@@ -6,7 +6,7 @@ import clip
 from tqdm import tqdm
 import gc
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-model, _ = clip.load("ViT-B/16", device, jit=False)
+model, _ = clip.load("ViT-L/14", device, jit=False)
 model = model.float()
 
 

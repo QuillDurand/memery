@@ -18,12 +18,12 @@ from annoy import AnnoyIndex
 
 
 def build_treemap(db):
-    treemap = AnnoyIndex(512, 'angular')
+    treemap = AnnoyIndex(len(db.items().__iter__().__next__()[1]['embed']), 'angular')
     for k, v in db.items():
         treemap.add_item(k, v['embed'])
 
     # Build the treemap, with 5 trees rn
-    treemap.build(5, n_jobs=-1)
+    treemap.build(5, n_jobs=5)
 
     return treemap
 

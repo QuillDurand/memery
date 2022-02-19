@@ -17,15 +17,17 @@ def slugify(filepath):
 
 
 def verify_image(f, full_verify=True):
-    print(f)
     try:
         img = Image.open(f)  # open the image file
         if full_verify:
             img.verify()  # verify that it is, in fact an image
         return True
     except Exception as e:
-        print(f'Skipping bad file: {f}\ndue to {type(e)}')
-        pass
+        try:
+            print(f'Deleting bad file: {f}\ndue to {type(e)}')
+            os.remove(f)
+        except:
+            pass
 
 
 def verification_worker(inqueue, outqueue, full_verify=True):
@@ -72,7 +74,7 @@ def verify_multiprocessing(filepaths, archive_slugs, nworkers=20, full_verify=Tr
             workersdone += 1
             continue
         result.append(res)
-        if (len(result) % 100) == 0:
+        if (len(result) % 1000) == 0:
             print(f"Finished {len(result)}/{len(filepaths)} in {int(time.time() - starttime)} seconds")
     return result
 
@@ -88,9 +90,9 @@ def archive_loader(filepaths, root, device, maxnew=-1):
     archive_db = {i: db[item[0]] for i, item in tqdm(enumerate(db.items())) if item[1]['slug'] in current_slugs}
     archive_slugs = set([v['slug'] for v in tqdm(archive_db.values())])
     print("verifying files")
-    # new_files = [(str(path), slug) for path, slug in tqdm(filepaths) if slug not in archive_slugs and verify_image(path)]
-    new_files = verify_multiprocessing(filepaths, archive_slugs, full_verify=False)
-    # new_files = [(str(path), slug) for path, slug in tqdm(filepaths) if slug not in archive_slugs]
+    #new_files = [(str(path), slug) for path, slug in tqdm(filepaths) if slug not in archive_slugs and verify_image(path, full_verify=False)]
+    # new_files = verify_multiprocessing(filepaths, archive_slugs, full_verify=False)
+    new_files = [(str(path), slug) for path, slug in tqdm(filepaths) if slug not in archive_slugs]
     if maxnew > 0:
         new_files = new_files[:maxnew]
 
@@ -109,7 +111,7 @@ def check_for_new_files(filepaths, db):
     return False
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=1)
 def db_loader(dbpath, device):
     # check for savefile or backup and extract
     if Path(dbpath).exists():
@@ -122,9 +124,9 @@ def db_loader(dbpath, device):
 from annoy import AnnoyIndex
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=1)
 def treemap_loader(treepath):
-    treemap = AnnoyIndex(512, 'angular')
+    treemap = AnnoyIndex(768, 'angular')
 
     if treepath.exists():
         treemap.load(str(treepath))

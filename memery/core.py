@@ -29,10 +29,12 @@ def index_flow(path, filepaths=None):
     new_embeddings = image_encoder(crafted_files, device)
 
     db = join_all(archive_db, new_files, new_embeddings)
+    print(f"Saving {len(db)} encodings")
+    save_encodings(root, db)
     print("Building treemap")
     t = build_treemap(db)
 
-    print(f"Saving {len(db)} encodings")
+    print(f"Saving treemap")
     save_paths = save_archives(root, t, db)
 
     return (save_paths)
@@ -41,6 +43,7 @@ def index_flow(path, filepaths=None):
 def chunked_encode(path, maxchunks=-1, filepaths=None, maxnew=100000):
     root = Path(path)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print(f"encoding using device {device}")
     if filepaths is None:
         filepaths = get_image_files(root)
     archive_db = {}
@@ -67,6 +70,7 @@ def chunked_encode(path, maxchunks=-1, filepaths=None, maxnew=100000):
             print("Finishing encoding due to reaching chunk limit")
             break
 
+
     print("Building treemap")
     t = build_treemap(db)
 
@@ -89,9 +93,9 @@ def query_flow(path, query=None, image_query=None, filepaths=None):
     treemap = treemap_loader(treepath)
     if filepaths is None:
         filepaths = get_image_files(root)
-    if treemap == None or len(db) != len(filepaths):
+    if treemap is None or len(db) != len(filepaths):
         print("checking for new files", treemap is None, len(db), len(filepaths))
-        if check_for_new_files(filepaths, db):
+        if treemap is None or check_for_new_files(filepaths, db):
             print('Indexing')
             dbpath, treepath = index_flow(root)
             streamlit.caching.clear_cache()

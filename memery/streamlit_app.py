@@ -50,13 +50,13 @@ def st_stderr(dst):
         yield
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=10)
 def send_image_query(path, text_query, image_query, filepaths=None):
-    ranked = core.query_flow(path, text_query, image_query=img, filepaths=filepaths)
+    ranked = core.query_flow(path, text_query, image_query=image_query, filepaths=filepaths)
     return(ranked)
 
 
-@st.cache(allow_output_mutation=True)
+@st.cache(allow_output_mutation=True, max_entries=10)
 def send_text_query(path, text_query, filepaths=None):
     ranked = core.query_flow(path, text_query, filepaths=filepaths)
     return(ranked)
@@ -64,7 +64,7 @@ def send_text_query(path, text_query, filepaths=None):
 
 st.sidebar.title("Memery")
 
-path = st.sidebar.text_input(label='Directory', value='./images')
+path = st.sidebar.text_input(label='Directory', value='')
 text_query = st.sidebar.text_input(label='Text query', value='')
 image_query = st.sidebar.file_uploader(label='Image query')
 im_display_zone = st.sidebar.beta_container()
@@ -82,26 +82,27 @@ with r:
     captions_on = st.checkbox(label="Caption filenames", value=False)
 
 
-@st.cache(allow_output_mutation=True, show_spinner=False)
+@st.cache(allow_output_mutation=True, show_spinner=False, max_entries=1000)
 def load_image(path):
     return Image.open(path).convert('RGB')
 
 
 if text_query or image_query:
-    start_time = time.time()
+
     with logbox:
         with st_stdout('info'):
             if image_query is not None:
                 img = load_image(image_query)
                 with im_display_zone:
                     st.image(img)
-                ranked = send_image_query(path, text_query, image_query)
+                ranked = send_image_query(path, text_query, img)
             else:
                 ranked = send_text_query(path, text_query)
+    start_time = time.time()
     ranked = copy.copy(ranked)
     ims = [load_image(o) for o in ranked[:num_images]]
     names = [o.replace(path, '') for o in ranked[:num_images]]
-    print(f"Finished query and loaded images in {time.time() - start_time} seconds")
+    print(f"copied rankings and loaded images in {time.time() - start_time} seconds")
     start_time = time.time()
     if captions_on:
         images = st.image(ims, width=sizes[size_choice], channels='RGB', caption=names)
